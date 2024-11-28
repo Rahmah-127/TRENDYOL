@@ -1,0 +1,129 @@
+openapi: 3.0.1
+info:
+  title: E-commerce API
+  description: API for managing products and shopping cart
+  version: 1.0.0
+paths:
+  /products/:
+    get:
+      summary: Get all products
+      operationId: getAllProducts
+      responses:
+        "200":
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+  /products/{id}:
+    get:
+      summary: Get a product by ID
+      operationId: getProductById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+
+  /cart/add:
+  post:
+    summary: Add a product to the shopping cart
+    operationId: addToCart
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              productId:
+                type: integer
+              quantity:
+                type: integer
+    responses:
+      "200":
+        description: Product added to cart
+        content:
+          application/json:
+            schema:
+              type: string
+
+  /cart/{productId}:
+    delete:
+      summary: Remove a product from the shopping cart
+      operationId: removeFromCart
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product removed from cart
+        "404":
+          description: Product not found in cart
+  /cart:
+    get:
+      summary: List all items in the shopping cart
+      operationId: getShoppingCartItems
+      responses:
+        "200":
+          description: A list of items in the shopping cart
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: "#/components/schemas/CartItem"
+  /cart/empty:
+    delete:
+      summary: Empty the shopping cart
+      operationId: emptyShoppingCart
+      responses:
+        "200":
+          description: Shopping cart has been emptied
+  /cart/pay:
+    post:
+      summary: Pay for the shopping cart
+      operationId: payForShoppingCart
+      responses:
+        "200":
+          description: Payment successful
+        "400":
+          description: Shopping cart is empty
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+    CartItem:
+      type: object
+      properties:
+        product:
+          $ref: "#/components/schemas/Product"
+        quantity:
+          type: integer
+        totalPrice:
+          type: number
+          format: float
